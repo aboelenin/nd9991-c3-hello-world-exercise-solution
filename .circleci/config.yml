@@ -25,6 +25,10 @@ jobs:
                 --template-file template.yml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
+        - run:
+            name: getting server IP
+            command: |
+              echo [all]\n  > inventory.txt;  aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicIpAddress' --output text > inventory.txt
 
   # Exercise: Config and Deployment
   configure_infrastructure: 
@@ -50,4 +54,8 @@ workflows:
   myWorkflow:
     jobs:
       - create_infrastructure
-      - configure_infrastructure
+      - configure_infrastructure:
+          requires: 
+            - create_infrastructure
+          
+
